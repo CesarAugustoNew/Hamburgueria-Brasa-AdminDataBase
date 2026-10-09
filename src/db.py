@@ -5,20 +5,24 @@ from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 
 
-SERVIDOR = st.secrets["database"]["server"]
-BANCO = st.secrets["database"]["database"]
-USUARIO = st.secrets["database"]["user"]
-SENHA = st.secrets["database"]["password"]
 DRIVER = "ODBC Driver 18 for SQL Server"
 
 
 def conectar():
+    if "database" not in st.secrets:
+        raise RuntimeError(
+            "Banco de dados indisponível neste ambiente "
+            "(secrets não configurados)."
+        )
+
+    cfg = st.secrets["database"]
+
     odbc = (
         f"DRIVER={{{DRIVER}}};"
-        f"SERVER={SERVIDOR};"
-        f"DATABASE={BANCO};"
-        f"UID={USUARIO};"
-        f"PWD={SENHA};"
+        f"SERVER={cfg['server']};"
+        f"DATABASE={cfg['database']};"
+        f"UID={cfg['user']};"
+        f"PWD={cfg['password']};"
         "TrustServerCertificate=yes;"
     )
 
